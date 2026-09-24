@@ -2,29 +2,40 @@ name: CI - Cafeteria React
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+
   pull_request:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
+
   build:
+
     runs-on: ubuntu-latest
 
     steps:
-      - name: Descargar codigo
-        uses: actions/checkout@v4
 
+      # 1. Descargar el código del repositorio
+      - name: Descargar codigo
+        uses: actions/checkout@v7
+
+      # 2. Configurar Node.js
       - name: Configurar Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
 
+      # 3. Instalar las dependencias
       - name: Instalar dependencias
         run: npm ci
 
+      # 4. Ejecutar las pruebas
       - name: Ejecutar pruebas
         run: npm test -- --watchAll=false
 
+      # 5. Construir la aplicación React
       - name: Construir aplicacion
         run: npm run build
