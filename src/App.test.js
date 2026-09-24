@@ -1,8 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders learn react link', () => {
+test('muestra el titulo principal de Aroma Cafe', () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+
+  const titulo = screen.getByText(/Café recién hecho/i);
+
+  expect(titulo).toBeInTheDocument();
 });
