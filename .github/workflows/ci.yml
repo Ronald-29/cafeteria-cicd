@@ -1,4 +1,4 @@
-name: CI - Cafeteria React
+name: CI/CD - Cafeteria React
 
 on:
   push:
@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Descargar el código
+      # 1. Descargar código
       - name: Descargar codigo
         uses: actions/checkout@v7
 
@@ -33,10 +33,30 @@ jobs:
       - name: Ejecutar pruebas
         run: npm test -- --watchAll=false
 
-      # 5. Construir aplicación React
+      # 5. Construir React
       - name: Construir aplicacion
         run: npm run build
 
-      # 6. Construir imagen Docker
+      # 6. Construir imagen Docker para validar el Dockerfile
       - name: Construir imagen Docker
         run: docker build -t cafeteria:${{ github.sha }} .
+
+      # 7. Iniciar sesión en Docker Hub
+      # Solo se ejecuta cuando hacemos push a main
+      - name: Iniciar sesion en Docker Hub
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # 8. Construir y publicar la imagen
+      - name: Publicar imagen en Docker Hub
+        if: github.event_name == 'push'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/cafeteria:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/cafeteria:${{ github.sha }}
