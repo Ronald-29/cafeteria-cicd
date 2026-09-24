@@ -10,14 +10,11 @@ on:
       - main
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-
-      # 1. Descargar el código del repositorio
+      # 1. Descargar el código
       - name: Descargar codigo
         uses: actions/checkout@v7
 
@@ -28,14 +25,18 @@ jobs:
           node-version: 24
           cache: npm
 
-      # 3. Instalar las dependencias
+      # 3. Instalar dependencias
       - name: Instalar dependencias
         run: npm ci
 
-      # 4. Ejecutar las pruebas
+      # 4. Ejecutar pruebas
       - name: Ejecutar pruebas
         run: npm test -- --watchAll=false
 
-      # 5. Construir la aplicación React
+      # 5. Construir aplicación React
       - name: Construir aplicacion
         run: npm run build
+
+      # 6. Construir imagen Docker
+      - name: Construir imagen Docker
+        run: docker build -t cafeteria:${{ github.sha }} .
