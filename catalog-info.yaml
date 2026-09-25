@@ -1,0 +1,17 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: cafeteria-cicd
+  description: Aplicacion de cafeteria utlizada para practicas de CI/CD y DevOps.
+  # Example for optional annotations
+  annotations:
+    github.com/project-slug: Ronald-29/cafeteria-cicd
+  #   backstage.io/techdocs-ref: dir:.
+spec:
+  type: website
+  lifecycle: experimental
+  owner: guests
+  system: cafeteria-system
+  consumesApis:
+    - cafeteria-api
+  
