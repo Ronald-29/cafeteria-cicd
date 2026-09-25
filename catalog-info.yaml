@@ -6,7 +6,7 @@ metadata:
   # Example for optional annotations
   annotations:
     github.com/project-slug: Ronald-29/cafeteria-cicd
-  #   backstage.io/techdocs-ref: dir:.
+    backstage.io/kubernetes-label-selector: 'app=cafeteria'
 spec:
   type: website
   lifecycle: experimental
