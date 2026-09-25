@@ -246,7 +246,7 @@ function ViewInicio({ onIrMenu }) {
   return (
     <>
       <div className="hero">
-        <h1>Café recién hecho, <span>a tu puerta V2</span></h1>
+        <h1>Café recién hecho, <span>a tu puerta V3</span></h1>
         <p>Explora nuestro menú, agrega tus favoritos al carrito y elige recoger en tienda o recibir delivery.</p>
         <button className="hero-btn" onClick={onIrMenu}>Ver el menú ☕</button>
       </div>
