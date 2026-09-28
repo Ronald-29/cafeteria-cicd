@@ -1,4 +1,4 @@
-name: CI/CD - Cafeteria React
+name: CI - Cafeteria React
 
 on:
   push:
@@ -15,12 +15,12 @@ jobs:
   # CI - INTEGRACIÓN CONTINUA
   # =========================================================
   build:
-    name: CI - Construir y probar
+    name: CI - Construir, probar y publicar
     runs-on: ubuntu-latest
 
     steps:
 
-      # 1. Descargar código del repositorio
+      # 1. Descargar código
       - name: Descargar codigo
         uses: actions/checkout@v7
 
@@ -39,19 +39,11 @@ jobs:
       - name: Ejecutar pruebas
         run: npm test -- --watchAll=false
 
-      # 5. Construir aplicación React
+      # 5. Construir aplicación
       - name: Construir aplicacion
         run: npm run build
 
-      # 6. Construir imagen Docker localmente
-      - name: Construir imagen Docker
-        run: |
-          docker build \
-            -t cafeteria:${{ github.sha }} \
-            .
-
-      # 7. Login en Docker Hub
-      # Solo se ejecuta cuando hacemos push a main
+      # 6. Login en Docker Hub
       - name: Iniciar sesion en Docker Hub
         if: github.event_name == 'push'
         uses: docker/login-action@v3
@@ -59,8 +51,8 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # 8. Publicar imagen en Docker Hub
-      - name: Publicar imagen en Docker Hub
+      # 7. Construir y publicar imagen
+      - name: Construir y publicar imagen Docker
         if: github.event_name == 'push'
         uses: docker/build-push-action@v6
         with:
@@ -69,78 +61,3 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/cafeteria:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/cafeteria:${{ github.sha }}
-
-
-  # =========================================================
-  # CD - DESPLIEGUE CONTINUO EN KUBERNETES PROXMOX
-  # =========================================================
-  deploy:
-    name: CD - Desplegar en Kubernetes Proxmox
-
-    # El despliegue comienza únicamente si CI termina correctamente
-    needs: build
-
-    # Solo desplegar los push realizados a main
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-
-    # Utilizar nuestro GitHub Actions Runner local
-    runs-on:
-      - self-hosted
-      - Linux
-      - X64
-
-    # Kubeconfig correspondiente al Kubernetes de Proxmox
-    env:
-      KUBECONFIG: /home/ronal/.kube/proxmox-config
-
-    steps:
-
-      # 1. Descargar código
-      - name: Descargar codigo
-        uses: actions/checkout@v7
-
-      # 2. Comprobar conexión con Kubernetes
-      - name: Verificar Kubernetes Proxmox
-        run: |
-          echo "=== Nodos Kubernetes ==="
-          kubectl get nodes
-
-          echo "=== Deployment actual ==="
-          kubectl get deployment cafeteria-deployment \
-            -n cafeteria
-
-      # 3. Actualizar la imagen del Deployment
-      # Cada imagen queda identificada por el SHA del commit
-      - name: Actualizar imagen de Aroma Cafe
-        run: |
-          kubectl set image deployment/cafeteria-deployment \
-            cafeteria=ronal29/cafeteria:${{ github.sha }} \
-            -n cafeteria
-
-      # 4. Esperar a que Kubernetes termine el Rolling Update
-      - name: Esperar Rolling Update
-        run: |
-          kubectl rollout status deployment/cafeteria-deployment \
-            -n cafeteria \
-            --timeout=180s
-
-      # 5. Mostrar el estado final
-      - name: Verificar despliegue
-        run: |
-          echo "=== Deployment ==="
-          kubectl get deployment cafeteria-deployment \
-            -n cafeteria
-
-          echo "=== Pods ==="
-          kubectl get pods \
-            -n cafeteria \
-            -o wide
-
-          echo "=== Service ==="
-          kubectl get service cafeteria-service \
-            -n cafeteria
-
-          echo "=== Imagen desplegada ==="
-          kubectl get deployment cafeteria-deployment \
-            -n cafeteria \
-            -o jsonpath='{.spec.template.spec.containers[0].image}{"\n"}'
