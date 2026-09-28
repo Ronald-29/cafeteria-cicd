@@ -4,14 +4,18 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - 'kubernetes/**'
 
   pull_request:
     branches:
       - main
+    paths-ignore:
+      - 'kubernetes/**'
 
 permissions:
   contents: write
-  
+
 jobs:
 
   # =========================================================
