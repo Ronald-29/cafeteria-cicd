@@ -1,5 +1,5 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
 metadata:
   name: cafeteria-deployment
   namespace: default
@@ -17,13 +17,11 @@ spec:
     metadata:
       labels:
         app: cafeteria
-
     spec:
       containers:
         - name: cafeteria
           image: ronal29/cafeteria:cc553c7c34c1f221313c730f47cabe5a78162f11
           imagePullPolicy: Always
-
           ports:
             - containerPort: 80
 
@@ -40,3 +38,13 @@ spec:
               port: 80
             initialDelaySeconds: 10
             periodSeconds: 20
+
+  strategy:
+    canary:
+      steps:
+        - setWeight: 25
+        - pause: {}
+        - setWeight: 50
+        - pause: {}
+        - setWeight: 75
+        - pause: {}
