@@ -41,6 +41,9 @@ spec:
 
   strategy:
     canary:
+      stableService: cafeteria-service
+      canaryService: cafeteria-canary-service
+
       steps:
         - setWeight: 25
         - pause: {}
