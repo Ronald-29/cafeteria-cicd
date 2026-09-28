@@ -9,6 +9,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+  
 jobs:
 
   # =========================================================
@@ -61,3 +64,31 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/cafeteria:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/cafeteria:${{ github.sha }}
+
+      # 8. Actualizar manifiesto Kubernetes para Argo CD
+      - name: Actualizar imagen en manifiesto Kubernetes
+        if: github.event_name == 'push'
+        run: |
+          sed -i \
+            "s|image: ronal29/cafeteria:.*|image: ronal29/cafeteria:${{ github.sha }}|" \
+            kubernetes/deployment.yaml
+
+          echo "Nueva imagen declarada:"
+          grep "image:" kubernetes/deployment.yaml
+
+      # 9. Guardar el nuevo estado deseado en Git
+      - name: Actualizar manifiesto GitOps
+        if: github.event_name == 'push'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add kubernetes/deployment.yaml
+
+          if git diff --cached --quiet; then
+            echo "El manifiesto ya contiene la imagen correcta."
+            exit 0
+          fi
+
+          git commit -m "Actualizar imagen a ${{ github.sha }} [skip ci]"
+          git push
