@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: cafeteria-health-check
+  namespace: default
+
+spec:
+  metrics:
+    - name: cafeteria-http-check
+      interval: 10s
+      count: 3
+      successCondition: result == 200
+      failureLimit: 1
+
+      provider:
+        web:
+          url: http://cafeteria-service.default.svc.cluster.local/

@@ -44,7 +44,13 @@ spec:
       steps:
         - setWeight: 25
         - pause: {}
+
+        - analysis:
+            templates:
+              - templateName: cafeteria-health-check
+
         - setWeight: 50
         - pause: {}
+
         - setWeight: 75
         - pause: {}
