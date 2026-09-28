@@ -549,7 +549,7 @@ export default function App() {
     <>
       <style>{S}</style>
       <nav>
-        <div className="brand">☕ <span>Aroma</span>Café - Analysis FAIL TEST</div>
+        <div className="brand">☕ <span>Aroma</span>Café - Analysis CANARY SERVICE</div>
         <div className="nav-links">
           <button className={`nb ${vista === "inicio" ? "act" : ""}`} onClick={() => setVista("inicio")}>Inicio</button>
           <button className={`nb ${vista === "menu" ? "act" : ""}`} onClick={() => setVista("menu")}>Menú</button>
