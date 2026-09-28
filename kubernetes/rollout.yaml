@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: cafeteria
-          image: ronal29/cafeteria:5bff8ce2fd55db4381bd3c1f87c223e57c44c747
+          image: ronal29/cafeteria:b6ac58d6db5125d02873cd797c82b90bd0b9473c
           imagePullPolicy: Always
           ports:
             - containerPort: 80
