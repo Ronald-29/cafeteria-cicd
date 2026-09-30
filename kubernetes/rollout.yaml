@@ -39,6 +39,14 @@ spec:
             initialDelaySeconds: 10
             periodSeconds: 20
 
+        - name: nginx-exporter
+          image: nginx/nginx-prometheus-exporter:1.5.1
+          args: 
+            - --nginx.scrape-uri=http://127.0.0.1/nginx_status
+          ports:
+            - name: metrics
+              containerPort: 9113  
+
   strategy:
     canary:
       stableService: cafeteria-service
